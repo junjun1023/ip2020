@@ -67,9 +67,9 @@
             // resultPictureBox
             // 
             this.resultPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.resultPictureBox.Location = new System.Drawing.Point(53, 353);
+            this.resultPictureBox.Location = new System.Drawing.Point(53, 350);
             this.resultPictureBox.Name = "resultPictureBox";
-            this.resultPictureBox.Size = new System.Drawing.Size(329, 256);
+            this.resultPictureBox.Size = new System.Drawing.Size(329, 251);
             this.resultPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.resultPictureBox.TabIndex = 1;
             this.resultPictureBox.TabStop = false;
@@ -275,6 +275,7 @@
             this.OverlapBtn.TabIndex = 18;
             this.OverlapBtn.Text = "Threshold Overlap";
             this.OverlapBtn.UseVisualStyleBackColor = true;
+            this.OverlapBtn.Click += new System.EventHandler(this.OverlapBtn_Click);
             // 
             // ImageRegistrationBtn
             // 

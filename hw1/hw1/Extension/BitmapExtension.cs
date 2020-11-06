@@ -135,19 +135,20 @@ namespace hw1
         public static Bitmap SmoothFilterMean(this Bitmap bitmap)
         {
             Bitmap change = new Bitmap(bitmap);
-
             change = change.AddPadding(1);
+
+            Bitmap ret = new Bitmap(bitmap.Width, bitmap.Height);
 
             Color color;
             float sumR = 0;
             float sumG = 0;
             float sumB = 0;
 
-            for (int i = 0; i <= change.Width - 3; i++)
-            for (int j = 0; j <= change.Height - 3; j++)
+            for (int i = 1; i < change.Width - 1; i++)
+            for (int j = 1; j < change.Height - 1; j++)
             {
-                for (int x = i; x <= i + 2; x++)
-                for (int y = j; y <= j + 2; y++)
+                for (int x = i-1; x <= i + 1; x++)
+                for (int y = j-1; y <= j + 1; y++)
                 {
                     color = change.GetPixel(x, y);
                     sumR = sumR + color.R;
@@ -155,36 +156,35 @@ namespace hw1
                     sumB = sumB + color.B;
                 }
 
-                int meanR = (int) Math.Round(sumR / 9, 10);
+                int meanR = (int)Math.Round(sumR / 9, 10);
                 int meanG = (int)Math.Round(sumG / 9, 10);
                 int meanB = (int)Math.Round(sumB / 9, 10);
 
-                    change.SetPixel(i + 1, j + 1, Color.FromArgb(meanR, meanG, meanB));
+                ret.SetPixel(i - 1, j - 1, Color.FromArgb(meanR, meanG, meanB));
                 sumR = 0;
                 sumG = 0;
                 sumB = 0;
             }
 
-            return change;
+            return ret;
         }
 
         public static Bitmap SmoothFilterMedian(this Bitmap bitmap)
         {
             Bitmap change = new Bitmap(bitmap);
-
             change = change.AddPadding(1);
 
+            Bitmap ret = new Bitmap(bitmap.Width, bitmap.Height);
+
             List<int> termsList = new List<int>();
-            Color c;
 
-            for (int i = 0; i <= change.Width - 3; i++)
-            for (int j = 0; j <= change.Height - 3; j++)
+            for (int i = 1; i < change.Width - 1; i++)
+            for (int j = 1; j < change.Height - 1; j++)
             {
-                for (int x = i; x <= i + 2; x++)
-                for (int y = j; y <= j + 2; y++)
+                for (int x = i-1; x <= i + 1; x++)
+                for (int y = j-1; y <= j + 1; y++)
                 {
-
-                    c = change.GetPixel(x, y);
+                    Color c = change.GetPixel(x, y);
                     termsList.Add(c.R);
                 }
                 int[] terms = termsList.ToArray();
@@ -193,10 +193,10 @@ namespace hw1
                 Array.Sort<int>(terms);
                 Array.Reverse(terms);
                 int color = terms[4];
-                change.SetPixel(i + 1, j + 1, Color.FromArgb(color, color, color));
+                ret.SetPixel(i - 1, j - 1, Color.FromArgb(color, color, color));
             }
 
-            return change;
+            return ret;
         }
 
 
@@ -313,24 +313,144 @@ namespace hw1
         public static Bitmap SobelEdgeDetection(this Bitmap bitmap, SobelEdgeType type)
         {
             Bitmap change = new Bitmap(bitmap);
+            change = change.ToGrayScale();
             change = change.AddPadding(1);
+            Bitmap ret = new Bitmap(bitmap.Width, bitmap.Height);
+
+            int[][] sobelx = {
+                new int[] {-1, 0, 1},
+                new int[] {-2, 0, 2},
+                new int[] {-1, 0, 1}};
+
+            int[][] sobely = {
+                new int[] {-1, -2, -1},
+                new int[] { 0, 0, 0},
+                new int[] { 1, 2, 1}};
+
+            int dx = 0;
+            int dy = 0;
 
             switch (type)
             {
                 case SobelEdgeType.Vertical:
+                    for (int i = 1; i < change.Width - 1; i++)
+                    {
+                        for (int j = 1; j < change.Height - 1; j++)
+                        {
+
+                            for (int x = i - 1; x <= i + 1; x++)
+                            for (int y = j - 1; y <= j + 1; y++)
+                            {
+                                dx += (change.GetPixel(x, y).R * sobely[x - i + 1][y - j + 1]);
+                                dy += (change.GetPixel(x, y).R * sobely[x - i + 1][y - j + 1]);
+                            }
+                            double derivata = Math.Sqrt((dx * dx) + (dy * dy));
+
+                            if (derivata > 255)
+                            {
+                                ret.SetPixel(i - 1, j - 1, Color.Black);
+                            }
+                            else
+                            {
+                                ret.SetPixel(i - 1, j - 1, Color.FromArgb(255, (int)derivata, (int)derivata, (int)derivata));
+                            }
+
+                            dx = 0;
+                            dy = 0;
+                        }
+
+                    }
                     break;
 
                 case SobelEdgeType.Horizontal:
+
+                    for (int i = 1; i < change.Width - 1; i++)
+                    {
+                        for (int j = 1; j < change.Height - 1; j++)
+                        {
+
+                            for (int x = i - 1; x <= i + 1; x++)
+                            for (int y = j - 1; y <= j + 1; y++)
+                            {
+                                dx += (change.GetPixel(x, y).R * sobelx[x - i + 1][y - j + 1]);
+                                dy += (change.GetPixel(x, y).R * sobelx[x - i + 1][y - j + 1]);
+                            }
+                            double derivata = Math.Sqrt((dx * dx) + (dy * dy));
+
+                            if (derivata > 255)
+                            {
+                                ret.SetPixel(i - 1, j - 1, Color.Black);
+                            }
+                            else
+                            {
+                                ret.SetPixel(i - 1, j - 1, Color.FromArgb(255, (int)derivata, (int)derivata, (int)derivata));
+                            }
+
+                            dx = 0;
+                            dy = 0;
+                        }
+
+                    }
                     break;
 
                 case SobelEdgeType.Combined:
+  
+                    for (int i = 1; i < change.Width - 1; i++)
+                    {
+                        for (int j = 1; j < change.Height - 1; j++)
+                        {
+
+                            for (int x = i - 1; x <= i + 1; x++)
+                            for (int y = j - 1; y <= j + 1; y++)
+                            {
+                                dx += (change.GetPixel(x, y).R * sobelx[x - i + 1][y - j + 1]);
+                                dy += (change.GetPixel(x, y).R * sobely[x - i + 1][y - j + 1]);
+                            }
+                            double derivata = Math.Sqrt((dx * dx) + (dy * dy));
+
+                            if (derivata > 255)
+                            {
+                                ret.SetPixel(i - 1, j - 1, Color.Black);
+                            }
+                            else
+                            {
+                                ret.SetPixel(i - 1, j - 1, Color.FromArgb(255, (int)derivata, (int)derivata, (int)derivata));
+                            }
+
+                            dx = 0;
+                            dy = 0;
+                        }
+
+                    }
                     break;
             }
 
-            return change;
+            return ret;
         }
 
+        public static Bitmap OverlapImage(this Bitmap bitmap, Bitmap mask)
+        {
 
+            for (int i = 0; i < mask.Width; i++)
+            for (int j = 0; j < mask.Height; j++)
+            {
+                Color color = mask.GetPixel(i, j);
+                color = color.R == 0 ? Color.FromArgb(0, 0, 0, 0) : Color.FromArgb(128, 0, 255, 0);
+                    mask.SetPixel(i, j, color);
+            }
+
+
+            Bitmap change = new Bitmap(bitmap.Width, bitmap.Height);
+
+            using (Graphics gr = Graphics.FromImage(change))
+            {
+                gr.DrawImage(bitmap, new Point(0, 0));
+                gr.DrawImage(mask, new Point(0, 0));
+            }
+
+
+            return change;
+        }
 
         /*public static Bitmap SmoothFilterMean(this Bitmap bitmap)
         {
@@ -338,6 +458,7 @@ namespace hw1
 
             return change;
         }*/
+
 
 
     }
