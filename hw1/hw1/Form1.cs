@@ -16,138 +16,211 @@ namespace hw1
     public partial class Form1 : Form
     {
 
-        Bitmap image;
-        List<Bitmap> imageList = new List<Bitmap>();
+        private List<Bitmap> BitmapList = new List<Bitmap>();
+        private int ListIndex = -1;
 
         public Form1()
         {
             InitializeComponent();
+
+            ColorExtractionComboBox.SelectedIndex = 0;
+            SmoothComboBox.SelectedIndex = 0;
+            SobelEdgeComboBox.SelectedIndex = 0;
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
 
+        private void RgbExtractionBtn_Click(object sender, EventArgs e)
+        {
+            Bitmap img = BitmapList[ListIndex];
+            int selected = ColorExtractionComboBox.SelectedIndex;
+            if (selected == 0)  // R
+            {
+                img = img.ToRChannel();
+                ListHandling(img);
+            } else if (selected == 1)   // G
+            {
+                img = img.ToGChannel();
+                ListHandling(img);
+            } else if (selected == 2)   // B
+            {
+                img = img.ToBChannel();
+                ListHandling(img);
+            }
+            else
+            {
+                MessageBox.Show("Unknown Type Extraction", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
+        private void ColorTransformationBtn_Click(object sender, EventArgs e)
         {
-
+            Bitmap img = BitmapList[ListIndex];
+            img = img.ToGrayScale();
+            ListHandling(img);
         }
 
-        private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
-        {
 
+        private void SmoothBtn_Click(object sender, EventArgs e)
+        {
+            Bitmap img = BitmapList[ListIndex];
+            if (SmoothComboBox.SelectedIndex == 0)
+            {
+                // Mean
+                img = img.SmoothFilterMean();
+                ListHandling(img);
+            } else if (SmoothComboBox.SelectedIndex == 1)
+            {
+                // Median
+                img = img.SmoothFilterMedian();
+                ListHandling(img);
+            }
         }
 
-        private void queryPictureBox_Click(object sender, EventArgs e)
+
+ 
+
+        private void Load_Click(object sender, EventArgs e)
         {
-            String imageLocation = "";
-            try {
+
+            try
+            {
                 OpenFileDialog dialog = new OpenFileDialog();
                 dialog.Filter = "All Files|*.*|Bitmap Files (.bmp)|*.bmp|Jpeg File(.jpg)|*.jpg";
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    imageList.Clear();
+                    BitmapList.Clear();
 
-                    imageLocation = dialog.FileName;
-                    queryPictureBox.ImageLocation = imageLocation;
-                    image = new Bitmap(Image.FromFile(imageLocation));
-                    imageList.Add(image);
+                    String imageLocation = dialog.FileName;
+                    
+                    Bitmap bitmap = new Bitmap(Image.FromFile(imageLocation));
+                    BitmapList.Add(bitmap);
 
-                    Bitmap imageRChannel = image.SmoothFilterMedian();
-                    resultPictureBox.Image = imageRChannel;
+                    ListIndex = 0;
+                    queryPictureBox.Image = BitmapList[ListIndex];
+                    resultPictureBox.Image = BitmapList[ListIndex];
+
+                    NextBtn.Enabled = false;
+                    PrevBtn.Enabled = false;
+                    ColorTransformationBtn.Enabled = true;
+                    BinaryThresholdBtn.Enabled = true;
+                    ImageRegistrationBtn.Enabled = true;
+                    RgbExtractionBtn.Enabled = true;
+                    OverlapBtn.Enabled = true;
+                    SmoothBtn.Enabled = true;
+                    SobelEdgeBtn.Enabled = true;
+
+                    ColorExtractionComboBox.Enabled = true;
+                    SmoothComboBox.Enabled = true;
+                    SobelEdgeComboBox.Enabled = true;
+
                 }
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 MessageBox.Show("An Error Occured", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void resultPictureBox_Click(object sender, EventArgs e)
+        private void PrevBtn_Click(object sender, EventArgs e)
         {
-
+            int PrevIndex = ListIndex - 1;
+            if (PrevIndex < 0)
+            {
+                // Error
+            } else if (PrevIndex == 0)
+            {
+                PrevBtn.Enabled = false;
+                ListIndex = PrevIndex;
+                resultPictureBox.Image = BitmapList[ListIndex];
+            }
+            else
+            {
+                NextBtn.Enabled = true;
+                ListIndex = PrevIndex;
+                resultPictureBox.Image = BitmapList[ListIndex];
+            }
         }
 
-        private void rgbExtractionBtn_Click(object sender, EventArgs e)
+        private void NextBtn_Click(object sender, EventArgs e)
         {
+            int NextIndex = ListIndex + 1;
+            if (NextIndex > BitmapList.Count-1)
+            {
+                // Error
+            } else if (NextIndex == BitmapList.Count - 1)
+            {
+                NextBtn.Enabled = false;
+                ListIndex = NextIndex;
+                resultPictureBox.Image = BitmapList[ListIndex];
+            }
+            else
+            {
+                PrevBtn.Enabled = true;
+                ListIndex = NextIndex;
+                resultPictureBox.Image = BitmapList[ListIndex];
+            }
+        }
+
+
+        private void ListHandling(Bitmap bitmap)
+        {
+
+            if (ListIndex < BitmapList.Count - 1)
+            {
+                for (int i = ListIndex + 1; i < BitmapList.Count; i++)
+                {
+                    BitmapList.RemoveAt(i);
+                }
+            }
             
-            for (int y = 0; y < image.Height; y++)
+
+            if (!PrevBtn.Enabled)
             {
-                for (int x = 0; x < image.Width; x++)
-                {
-                    // 讀取影像平面上(x,y)的RGB資訊
-                    Color RGB = image.GetPixel(x, y);
-                    // RGB 是 VS 內建的 class 可以直接讀取影像的色彩資訊 R = Red, G = Green, B =Blue                        
-                    int invR = Convert.ToInt32(255 - RGB.R);
-                    int invG = Convert.ToInt32(255 - RGB.G);
-                    int invB = Convert.ToInt32(255 - RGB.B);
-
-                    image.SetPixel(x, y, Color.FromArgb(invR, invG, invB));
-                }
+                PrevBtn.Enabled = true;
             }
-            resultPictureBox.Image = image;
+            BitmapList.Add(bitmap);
+            ListIndex = BitmapList.Count - 1;
+
+            resultPictureBox.Image = bitmap;
         }
 
-        private void colorTransformationBtn_Click(object sender, EventArgs e)
+        private void BinaryThresholdBtn_Click(object sender, EventArgs e)
         {
-
+            Bitmap img = BitmapList[ListIndex];
+            img = img.BinaryThreshold(128);
+            ListHandling(img);
         }
 
-        private void colorExtractionComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void HistogramEqualization_Click(object sender, EventArgs e)
         {
-
+            Bitmap img = BitmapList[ListIndex];
+            img = img.HistogramEqualization();
+            ListHandling(img);
         }
 
-        private void SmoothBtn_Click(object sender, EventArgs e)
+        private void SobelEdgeBtn_Click(object sender, EventArgs e)
         {
+            Bitmap img = BitmapList[ListIndex];
 
-        }
-
-        public static byte[] ImageToBuffer(Image Image, System.Drawing.Imaging.ImageFormat imageFormat)
-        {
-            if (Image == null) { return null; }
-            byte[] data = null;
-            using (MemoryStream oMemoryStream = new MemoryStream())
+            if (SobelEdgeComboBox.SelectedIndex == 0)
             {
-                //建立副本
-                using (Bitmap oBitmap = new Bitmap(Image))
-                {
-                    //儲存圖片到 MemoryStream 物件，並且指定儲存影像之格式
-                    oBitmap.Save(oMemoryStream, imageFormat);
-                    //設定資料流位置
-                    oMemoryStream.Position = 0;
-                    //設定 buffer 長度
-                    data = new byte[oMemoryStream.Length];
-                    //將資料寫入 buffer
-                    oMemoryStream.Read(data, 0, Convert.ToInt32(oMemoryStream.Length));
-                    //將所有緩衝區的資料寫入資料流
-                    oMemoryStream.Flush();
-                }
-            }
-            return data;
-        }
-
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            for (int y = 0; y < image.Height; y++)
+                // Vertical
+                img = img.SobelEdgeDetection(BitmapExtension.SobelEdgeType.Vertical);
+                ListHandling(img);
+            } else if (SobelEdgeComboBox.SelectedIndex == 1)
             {
-                for (int x = 0; x < image.Width; x++)
-                {
-                    // 讀取影像平面上(x,y)的RGB資訊
-                    Color RGB = image.GetPixel(x, y);
-                    // RGB 是 VS 內建的 class 可以直接讀取影像的色彩資訊 R = Red, G = Green, B =Blue                        
-                    int invR = Convert.ToInt32(255 - RGB.R);
-                    int invG = Convert.ToInt32(255 - RGB.G);
-                    int invB = Convert.ToInt32(255 - RGB.B);
-
-                    image.SetPixel(x, y, Color.FromArgb(invR, invG, invB));
-                }
+                // Horizontal
+                img = img.SobelEdgeDetection(BitmapExtension.SobelEdgeType.Horizontal);
+                ListHandling(img);
+            } else if (SobelEdgeComboBox.SelectedIndex == 2)
+            {
+                // Combined
+                img = img.SobelEdgeDetection(BitmapExtension.SobelEdgeType.Combined);
+                ListHandling(img);
             }
-            resultPictureBox.Image = image;
+            
         }
-
     }
 }
 

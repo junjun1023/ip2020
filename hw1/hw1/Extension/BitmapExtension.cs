@@ -1,11 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 
 namespace hw1
 {
     public static class BitmapExtension
     {
+
+        public enum SobelEdgeType
+        {
+            Vertical,
+            Horizontal,
+            Combined
+        }
+
+        public static Bitmap AddPadding(this Bitmap bitmap, int padding)
+        {
+            Bitmap change = new Bitmap(bitmap.Width + padding*2, bitmap.Height + padding*2);
+            for (int y = 0; y < change.Height; y++)
+            {
+                for (int x = 0; x < change.Width; x++)
+                {
+
+                    if (x == 0 || y == 0 || x == change.Width - 1 || y == change.Height - 1)
+                    {
+                        change.SetPixel(x, y, Color.FromArgb(0, 0, 0));
+                    }
+                    else
+                    {
+                        Color value = bitmap.GetPixel(x-1, y-1);
+                        change.SetPixel(x, y, value);
+                    }
+ 
+                }
+            }
+
+
+            return change;
+        }
+
+
         public static Bitmap ToRChannel(this Bitmap bitmap)
         {
 
@@ -83,11 +118,10 @@ namespace hw1
                     // 讀取影像平面上(x,y)的RGB資訊
                     Color RGB = change.GetPixel(x, y);
                     // RGB 是 VS 內建的 class 可以直接讀取影像的色彩資訊 R = Red, G = Green, B =Blue                        
-                    int invR = RGB.R;
-                    int invG = RGB.G;
-                    int invB = RGB.B;
-
-                    byte gray = (byte)(.333 * invR + .333 * invG + .333 * invB);
+                    int invR = (int)Convert.ToInt32(RGB.R * 0.299);
+                    int invG = (int)Convert.ToInt32(RGB.G * 0.587);
+                    int invB = (int)Convert.ToInt32(RGB.B * 0.114);
+                    int gray = invR + invG + invB;
                     change.SetPixel(x, y, Color.FromArgb(gray, gray, gray));
                     // int gray = (invR + invG + invB) / 3;
                     // change.SetPixel(x, y, Color.FromArgb(gray, gray, gray));
@@ -102,10 +136,12 @@ namespace hw1
         {
             Bitmap change = new Bitmap(bitmap);
 
-            change = change.ToGrayScale();
+            change = change.AddPadding(1);
 
             Color color;
-            float sum = 0;
+            float sumR = 0;
+            float sumG = 0;
+            float sumB = 0;
 
             for (int i = 0; i <= change.Width - 3; i++)
             for (int j = 0; j <= change.Height - 3; j++)
@@ -114,13 +150,19 @@ namespace hw1
                 for (int y = j; y <= j + 2; y++)
                 {
                     color = change.GetPixel(x, y);
-                    sum = sum + color.R;
+                    sumR = sumR + color.R;
+                    sumG = sumG + color.G;
+                    sumB = sumB + color.B;
                 }
 
-                int mean = (int) Math.Round(sum / 9, 10);
-                change.SetPixel(i + 1, j + 1, Color.FromArgb(mean, mean, mean));
-                sum = 0;
+                int meanR = (int) Math.Round(sumR / 9, 10);
+                int meanG = (int)Math.Round(sumG / 9, 10);
+                int meanB = (int)Math.Round(sumB / 9, 10);
 
+                    change.SetPixel(i + 1, j + 1, Color.FromArgb(meanR, meanG, meanB));
+                sumR = 0;
+                sumG = 0;
+                sumB = 0;
             }
 
             return change;
@@ -130,7 +172,7 @@ namespace hw1
         {
             Bitmap change = new Bitmap(bitmap);
 
-            change = change.ToGrayScale();
+            change = change.AddPadding(1);
 
             List<int> termsList = new List<int>();
             Color c;
@@ -156,6 +198,138 @@ namespace hw1
 
             return change;
         }
+
+
+        public static (int[], int[], int[]) GetHistogram(this Bitmap bitmap)
+        {
+            // Bitmap change = new Bitmap(bitmap);
+
+            int[] cntR = new int[256];
+            int[] cntG = new int[256];
+            int[] cntB = new int[256];
+
+            for (int i = 0; i < bitmap.Height; i++)
+            {
+                for (int j = 0; j < bitmap.Width; j++)
+                {
+                    Color color = bitmap.GetPixel(j, i);
+
+                    int r = color.R;
+                    int g = color.G;
+                    int b = color.B;
+
+                    cntR[r]++;
+                    cntG[g]++;
+                    cntB[b]++;
+                }
+            }
+
+
+            return (cntR, cntG, cntB);
+        }
+
+
+        public static Bitmap HistogramEqualization(this Bitmap bitmap)
+        {
+            Bitmap change = new Bitmap(bitmap);
+
+            var histogram = change.GetHistogram();
+
+            double[] pdfR = new double[256];
+            double[] pdfG = new double[256];
+            double[] pdfB = new double[256];
+
+            for (int k = 0; k < 256; k++)
+            {
+                double valueR = histogram.Item1[k];
+                double rate = valueR / (change.Height * change.Width * 1.0);
+                pdfR[k] = rate;
+
+                double valueG = histogram.Item2[k];
+                rate = valueG / (change.Height * change.Width * 1.0);
+                pdfG[k] = rate;
+
+                double valueB = histogram.Item3[k];
+                rate = valueB / (change.Height * change.Width * 1.0);
+                pdfB[k] = rate;
+            }
+
+
+            for (int j = 0; j < change.Height; j++)
+            {
+                for (int i = 0; i < change.Width; i++)
+                {
+                    double densitySumR = 0;
+                    double densitySumG = 0;
+                    double densitySumB = 0;
+                    Color value = change.GetPixel(i, j);
+                    for (int k = 0; k <= value.R; k++)
+                    {    //累積概率
+                        densitySumR += pdfR[k];
+                    }
+
+                    for (int k = 0; k <= value.G; k++)
+                    {    //累積概率
+                        densitySumG += pdfG[k];
+                    }
+
+                    for (int k = 0; k <= value.B; k++)
+                    {    //累積概率
+                        densitySumB += pdfB[k];
+                    }
+                    byte r = (byte)Math.Round(255 * densitySumR);
+                    byte g = (byte)Math.Round(255 * densitySumG);
+                    byte b = (byte)Math.Round(255 * densitySumB);
+                    Color newValue = Color.FromArgb(r, g, b);
+                    change.SetPixel(i, j, newValue);
+                }
+            }
+            return change;
+        }
+
+
+        public static Bitmap BinaryThreshold(this Bitmap bitmap, int threshold)
+        {
+            Bitmap change = new Bitmap(bitmap);
+            change = change.ToGrayScale();
+
+            for (int j = 0; j < change.Height; j++)
+            {
+                for (int i = 0; i < change.Width; i++)
+                {
+                    Color value = change.GetPixel(i, j);
+                    int r = value.R >= threshold ? 255 : 0;
+                    int g = value.G >= threshold ? 255 : 0;
+                    int b = value.B >= threshold ? 255 : 0;
+
+                    change.SetPixel(i, j, Color.FromArgb(r, g, b));
+                }
+            }
+
+            return change;
+        }
+
+
+        public static Bitmap SobelEdgeDetection(this Bitmap bitmap, SobelEdgeType type)
+        {
+            Bitmap change = new Bitmap(bitmap);
+            change = change.AddPadding(1);
+
+            switch (type)
+            {
+                case SobelEdgeType.Vertical:
+                    break;
+
+                case SobelEdgeType.Horizontal:
+                    break;
+
+                case SobelEdgeType.Combined:
+                    break;
+            }
+
+            return change;
+        }
+
 
 
         /*public static Bitmap SmoothFilterMean(this Bitmap bitmap)
