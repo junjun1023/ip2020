@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Custom\CustomMatrix.cs" />
     <Compile Include="Extension\BitmapExtension.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

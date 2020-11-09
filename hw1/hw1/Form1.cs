@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -10,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using hw1.Extension;
 
 namespace hw1
 {
@@ -19,6 +21,7 @@ namespace hw1
         private List<Bitmap> BitmapList = new List<Bitmap>();
         private int ListIndex = -1;
 
+
         public IPForm()
         {
             InitializeComponent();
@@ -26,8 +29,8 @@ namespace hw1
             ColorExtractionComboBox.SelectedIndex = 0;
             SmoothComboBox.SelectedIndex = 0;
             SobelEdgeComboBox.SelectedIndex = 0;
-            listBoxOrigin.SelectedIndex = 0;
-            listBoxResult.SelectedIndex = 0;
+            originListBox.SelectedIndex = 0;
+            resultListBox.SelectedIndex = 0;
 
             OriginHistogram.Series[0].Color = Color.Red;
             OriginHistogram.Series[1].Color = Color.Green;
@@ -36,6 +39,7 @@ namespace hw1
             ResultHistogram.Series[0].Color = Color.Red;
             ResultHistogram.Series[1].Color = Color.Green;
             ResultHistogram.Series[2].Color = Color.Blue;
+
         }
 
         private void ListHandling(Bitmap bitmap)
@@ -43,7 +47,7 @@ namespace hw1
 
             if (ListIndex < BitmapList.Count - 1)
             {
-                for (int i = ListIndex + 1; i < BitmapList.Count; )
+                for (int i = ListIndex + 1; i < BitmapList.Count;)
                 {
                     BitmapList.RemoveAt(i);
                 }
@@ -75,7 +79,7 @@ namespace hw1
 
             for (int i = 0; i < ResultHistogram.Series.Count; i++)
             {
-                if (i == listBoxResult.SelectedIndex)
+                if (i == resultListBox.SelectedIndex)
                 {
                     ResultHistogram.Series[i].Enabled = true;
                 }
@@ -104,7 +108,7 @@ namespace hw1
 
             for (int i = 0; i < OriginHistogram.Series.Count; i++)
             {
-                if (i == listBoxOrigin.SelectedIndex)
+                if (i == originListBox.SelectedIndex)
                 {
                     OriginHistogram.Series[i].Enabled = true;
                 }
@@ -144,7 +148,6 @@ namespace hw1
 
                     ColorTransformationBtn.Enabled = true;
                     BinaryThresholdBtn.Enabled = true;
-                    ImageRegistrationBtn.Enabled = true;
                     RgbExtractionBtn.Enabled = true;
                     OverlapBtn.Enabled = true;
                     SmoothBtn.Enabled = true;
@@ -155,6 +158,11 @@ namespace hw1
                     SmoothComboBox.Enabled = true;
                     SobelEdgeComboBox.Enabled = true;
 
+                    ThresoldUpDown.Enabled = true;
+
+                    originListBox.Enabled = true;
+                    resultListBox.Enabled = true;
+
                     ShowOriginHistogram(bitmap);
                     ShowResultHistogram(bitmap);
 
@@ -163,6 +171,17 @@ namespace hw1
             catch (Exception)
             {
                 MessageBox.Show("An Error Occured", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void SaveBtn_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "All Files|*.*|Bitmap Files (.bmp)|*.bmp|Jpeg File(.jpg)|*.jpg";
+
+            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                BitmapList[ListIndex].Save(sfd.FileName);
             }
         }
 
@@ -233,16 +252,16 @@ namespace hw1
                 ShowResultHistogram(BitmapList[ListIndex]);
             }
 
-            
+
         }
 
 
 
-        private void listBoxOrigin_SelectedIndexChanged(object sender, EventArgs e)
+        private void originListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < OriginHistogram.Series.Count; i++)
             {
-                if (i == listBoxOrigin.SelectedIndex)
+                if (i == originListBox.SelectedIndex)
                 {
                     OriginHistogram.Series[i].Enabled = true;
                 }
@@ -253,11 +272,11 @@ namespace hw1
             }
         }
 
-        private void listBoxResult_SelectedIndexChanged(object sender, EventArgs e)
+        private void resultListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < ResultHistogram.Series.Count; i++)
             {
-                if (i == listBoxResult.SelectedIndex)
+                if (i == resultListBox.SelectedIndex)
                 {
                     ResultHistogram.Series[i].Enabled = true;
                 }
@@ -273,17 +292,19 @@ namespace hw1
         {
             Bitmap img = BitmapList[ListIndex];
             int selected = ColorExtractionComboBox.SelectedIndex;
-            if (selected == 0)  // R
+            if (selected == 0) // R
             {
                 img = img.ToRChannel();
                 ShowResultHistogram(img);
                 ListHandling(img);
-            } else if (selected == 1)   // G
+            }
+            else if (selected == 1) // G
             {
                 img = img.ToGChannel();
                 ShowResultHistogram(img);
                 ListHandling(img);
-            } else if (selected == 2)   // B
+            }
+            else if (selected == 2) // B
             {
                 img = img.ToBChannel();
                 ShowResultHistogram(img);
@@ -313,7 +334,8 @@ namespace hw1
                 img = img.SmoothFilterMean();
                 ShowResultHistogram(img);
                 ListHandling(img);
-            } else if (SmoothComboBox.SelectedIndex == 1)
+            }
+            else if (SmoothComboBox.SelectedIndex == 1)
             {
                 // Median
                 img = img.SmoothFilterMedian();
@@ -323,12 +345,11 @@ namespace hw1
         }
 
 
-        
-        
         private void BinaryThresholdBtn_Click(object sender, EventArgs e)
         {
             Bitmap img = BitmapList[ListIndex];
-            img = img.BinaryThreshold(128);
+            var threshold = ThresoldUpDown.Value;
+            img = img.BinaryThreshold(Convert.ToInt32(threshold));
 
             ShowResultHistogram(img);
 
@@ -371,7 +392,7 @@ namespace hw1
                 ShowResultHistogram(img);
                 ListHandling(img);
             }
-            
+
         }
 
         private void OverlapBtn_Click(object sender, EventArgs e)
@@ -383,6 +404,120 @@ namespace hw1
         }
 
 
+        private void LoadImageA_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                OpenFileDialog dialog = new OpenFileDialog();
+                dialog.Filter = "All Files|*.*|Bitmap Files (.bmp)|*.bmp|Jpeg File(.jpg)|*.jpg";
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+
+                    RegistAListBox.Items.Clear();
+
+                    String imageLocation = dialog.FileName;
+                    RegisterImageA.ImageLocation = imageLocation;
+                    RegistAListBox.Enabled = true;
+                    ImageRegistrationBtn.Enabled = false;
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("An Error Occured", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LoadImageB_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                OpenFileDialog dialog = new OpenFileDialog();
+                dialog.Filter = "All Files|*.*|Bitmap Files (.bmp)|*.bmp|Jpeg File(.jpg)|*.jpg";
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+
+                    RegistBListBox.Items.Clear();
+
+                    String imageLocation = dialog.FileName;
+                    RegisterImageB.ImageLocation = imageLocation;
+                    RegistBListBox.Enabled = true;
+                    ImageRegistrationBtn.Enabled = false;
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("An Error Occured", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void pictureBoxA_Click(object sender, EventArgs e)
+        {
+            if (RegisterImageA.Image != null)
+            {
+
+                (int, int) coordinate = (MousePosition.X, MousePosition.Y);
+
+                RegistAListBox.Items.Add(coordinate);
+
+                if (RegistAListBox.Items.Count >= 4)
+                {
+                    if (RegistBListBox.Items.Count == 4)
+                    {
+                        ImageRegistrationBtn.Enabled = true;
+                    }
+                    return;
+                }
+
+            }
+        }
+
+        private void pictureBoxB_Click(object sender, EventArgs e)
+        {
+            if (RegisterImageB.Image != null)
+            {
+                (int, int) coordinate = (MousePosition.X, MousePosition.Y);
+
+                RegistBListBox.Items.Add(coordinate);
+
+                if (RegistBListBox.Items.Count >= 4)
+                {
+                    if (RegistAListBox.Items.Count == 4)
+                    {
+                        ImageRegistrationBtn.Enabled = true;
+                    }
+                    return;
+                }
+
+            }
+        }
+
+        private void RegistAListBox_DoubleClick(object sender, EventArgs e)
+        {
+            RegistAListBox.Items.RemoveAt(RegistAListBox.SelectedIndex);
+            ImageRegistrationBtn.Enabled = false;
+        }
+
+        private void RegistBListBox_DoubleClick(object sender, EventArgs e)
+        {
+            RegistBListBox.Items.RemoveAt(RegistBListBox.SelectedIndex);
+            ImageRegistrationBtn.Enabled = false;
+        }
+
+        private void ImageRegistrationBtn_Click(object sender, EventArgs e)
+        {
+            Debug.Assert(RegistAListBox.Items.Count == 4, "Registration should select exact 4 points");
+            Debug.Assert(RegistBListBox.Items.Count == 4, "Registration should select exact 4 points");
+
+
+
+        }
+
+        private void GetTransformation()
+        {
+
+        }
 
     }
 }

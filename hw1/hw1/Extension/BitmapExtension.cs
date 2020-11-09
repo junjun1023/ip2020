@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 
-namespace hw1
+namespace hw1.Extension
 {
     public static class BitmapExtension
     {
