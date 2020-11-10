@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using hw1.Custom;
 using hw1.Extension;
 
 namespace hw1
@@ -21,6 +22,9 @@ namespace hw1
         private List<Bitmap> BitmapList = new List<Bitmap>();
         private int ListIndex = -1;
 
+        private CustomMatrix customMatrix = new CustomMatrix();
+        private List<(int, int)> RegistA = new List<(int, int)>();
+        private List<(int, int)> RegistB = new List<(int, int)>();
 
         public IPForm()
         {
@@ -415,6 +419,7 @@ namespace hw1
                 {
 
                     RegistAListBox.Items.Clear();
+                    RegistA.Clear();
 
                     String imageLocation = dialog.FileName;
                     RegisterImageA.ImageLocation = imageLocation;
@@ -439,7 +444,7 @@ namespace hw1
                 {
 
                     RegistBListBox.Items.Clear();
-
+                    RegistB.Clear();
                     String imageLocation = dialog.FileName;
                     RegisterImageB.ImageLocation = imageLocation;
                     RegistBListBox.Enabled = true;
@@ -456,10 +461,12 @@ namespace hw1
         {
             if (RegisterImageA.Image != null)
             {
-
-                (int, int) coordinate = (MousePosition.X, MousePosition.Y);
+                MouseEventArgs mouse = (MouseEventArgs) e;
+                
+                (int, int) coordinate = (mouse.X, mouse.Y);
 
                 RegistAListBox.Items.Add(coordinate);
+                RegistA.Add(coordinate);
 
                 if (RegistAListBox.Items.Count >= 4)
                 {
@@ -477,10 +484,12 @@ namespace hw1
         {
             if (RegisterImageB.Image != null)
             {
-                (int, int) coordinate = (MousePosition.X, MousePosition.Y);
+                MouseEventArgs mouse = (MouseEventArgs)e;
+
+                (int, int) coordinate = (mouse.X, mouse.Y);
 
                 RegistBListBox.Items.Add(coordinate);
-
+                RegistB.Add(coordinate);
                 if (RegistBListBox.Items.Count >= 4)
                 {
                     if (RegistAListBox.Items.Count == 4)
@@ -496,12 +505,14 @@ namespace hw1
         private void RegistAListBox_DoubleClick(object sender, EventArgs e)
         {
             RegistAListBox.Items.RemoveAt(RegistAListBox.SelectedIndex);
+            RegistA.RemoveAt(RegistAListBox.SelectedIndex);
             ImageRegistrationBtn.Enabled = false;
         }
 
         private void RegistBListBox_DoubleClick(object sender, EventArgs e)
         {
             RegistBListBox.Items.RemoveAt(RegistBListBox.SelectedIndex);
+            RegistB.RemoveAt(RegistAListBox.SelectedIndex);
             ImageRegistrationBtn.Enabled = false;
         }
 
@@ -509,6 +520,38 @@ namespace hw1
         {
             Debug.Assert(RegistAListBox.Items.Count == 4, "Registration should select exact 4 points");
             Debug.Assert(RegistBListBox.Items.Count == 4, "Registration should select exact 4 points");
+
+            double[,] validA = new double[3, 3]
+            {
+                {RegistA[0].Item1, RegistA[0].Item2, 1},
+                {RegistA[1].Item1, RegistA[1].Item2, 1},
+                {RegistA[2].Item1, RegistA[2].Item2, 1},
+            };
+
+            double[,] validB = new double[3, 3]
+            {
+                {RegistB[0].Item1, RegistB[0].Item2, 1},
+                {RegistB[1].Item1, RegistB[1].Item2, 1},
+                {RegistB[2].Item1, RegistB[2].Item2, 1},
+            };
+
+            validA = customMatrix.MatrixInverse<double>(validA);
+            validA = customMatrix.MatrixMultiply(validA, validB);   // transformation matrix
+
+            // scale then rotate
+            var cx = Math.Sqrt(Math.Pow(validA[0, 0], 2) + Math.Pow(validA[0, 1], 2));
+            var cy = Math.Sqrt(Math.Pow(validA[1, 0], 2) + Math.Pow(validA[1, 1], 2));
+            var theta = Math.Atan(validA[0, 1] / validA[0, 0]) / Math.PI * 180;
+
+            // rotate then scale
+            var cx_2 = Math.Sqrt(Math.Pow(validA[0, 0], 2) + Math.Pow(validA[1, 0], 2));
+            var cy_2 = Math.Sqrt(Math.Pow(validA[0, 1], 2) + Math.Pow(validA[1, 1], 2));
+            var theta_2 = Math.Atan(validA[1, 1] / validA[0, 1]) / Math.PI * 180;
+
+            // validate rotate and scale by 4th value
+            // because matrix satisfy associative law
+            // so there will be two same results for different orders of rotate and scale
+
 
 
 
@@ -518,7 +561,6 @@ namespace hw1
         {
 
         }
-
     }
 }
 

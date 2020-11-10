@@ -452,6 +452,14 @@ namespace hw1.Extension
             return change;
         }
 
+
+        public static Bitmap Transform(this Bitmap bitmap, double[,] matrix)
+        {
+            Bitmap change = new Bitmap(bitmap);
+
+            return change;
+        }
+
         /*public static Bitmap SmoothFilterMean(this Bitmap bitmap)
         {
             Bitmap change = new Bitmap(bitmap);
