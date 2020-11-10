@@ -28,16 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series11 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series12 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.queryPictureBox = new System.Windows.Forms.PictureBox();
             this.resultPictureBox = new System.Windows.Forms.PictureBox();
             this.ColorExtractionComboBox = new System.Windows.Forms.ComboBox();
@@ -74,6 +74,8 @@
             this.RegistBListBox = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.RegisterTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.queryPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.resultPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.OriginHistogram)).BeginInit();
@@ -84,6 +86,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ThresoldUpDown)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // queryPictureBox
@@ -319,50 +322,50 @@
             // 
             // OriginHistogram
             // 
-            chartArea1.Name = "ChartArea1";
-            this.OriginHistogram.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.OriginHistogram.Legends.Add(legend1);
+            chartArea3.Name = "ChartArea1";
+            this.OriginHistogram.ChartAreas.Add(chartArea3);
+            legend3.Name = "Legend1";
+            this.OriginHistogram.Legends.Add(legend3);
             this.OriginHistogram.Location = new System.Drawing.Point(286, 30);
             this.OriginHistogram.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.OriginHistogram.Name = "OriginHistogram";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series2";
-            series3.ChartArea = "ChartArea1";
-            series3.Legend = "Legend1";
-            series3.Name = "Series3";
-            this.OriginHistogram.Series.Add(series1);
-            this.OriginHistogram.Series.Add(series2);
-            this.OriginHistogram.Series.Add(series3);
+            series7.ChartArea = "ChartArea1";
+            series7.Legend = "Legend1";
+            series7.Name = "Series1";
+            series8.ChartArea = "ChartArea1";
+            series8.Legend = "Legend1";
+            series8.Name = "Series2";
+            series9.ChartArea = "ChartArea1";
+            series9.Legend = "Legend1";
+            series9.Name = "Series3";
+            this.OriginHistogram.Series.Add(series7);
+            this.OriginHistogram.Series.Add(series8);
+            this.OriginHistogram.Series.Add(series9);
             this.OriginHistogram.Size = new System.Drawing.Size(488, 214);
             this.OriginHistogram.TabIndex = 20;
             this.OriginHistogram.Text = "Origin Chart";
             // 
             // ResultHistogram
             // 
-            chartArea2.Name = "ChartArea1";
-            this.ResultHistogram.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.ResultHistogram.Legends.Add(legend2);
+            chartArea4.Name = "ChartArea1";
+            this.ResultHistogram.ChartAreas.Add(chartArea4);
+            legend4.Name = "Legend1";
+            this.ResultHistogram.Legends.Add(legend4);
             this.ResultHistogram.Location = new System.Drawing.Point(286, 255);
             this.ResultHistogram.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.ResultHistogram.Name = "ResultHistogram";
-            series4.ChartArea = "ChartArea1";
-            series4.Legend = "Legend1";
-            series4.Name = "Series1";
-            series5.ChartArea = "ChartArea1";
-            series5.Legend = "Legend1";
-            series5.Name = "Series2";
-            series6.ChartArea = "ChartArea1";
-            series6.Legend = "Legend1";
-            series6.Name = "Series3";
-            this.ResultHistogram.Series.Add(series4);
-            this.ResultHistogram.Series.Add(series5);
-            this.ResultHistogram.Series.Add(series6);
+            series10.ChartArea = "ChartArea1";
+            series10.Legend = "Legend1";
+            series10.Name = "Series1";
+            series11.ChartArea = "ChartArea1";
+            series11.Legend = "Legend1";
+            series11.Name = "Series2";
+            series12.ChartArea = "ChartArea1";
+            series12.Legend = "Legend1";
+            series12.Name = "Series3";
+            this.ResultHistogram.Series.Add(series10);
+            this.ResultHistogram.Series.Add(series11);
+            this.ResultHistogram.Series.Add(series12);
             this.ResultHistogram.Size = new System.Drawing.Size(488, 214);
             this.ResultHistogram.TabIndex = 21;
             this.ResultHistogram.Text = "Result Histogram";
@@ -422,10 +425,10 @@
             // pictureBoxRegistration
             // 
             this.pictureBoxRegistration.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxRegistration.Location = new System.Drawing.Point(548, 552);
+            this.pictureBoxRegistration.Location = new System.Drawing.Point(3, 3);
             this.pictureBoxRegistration.Name = "pictureBoxRegistration";
-            this.pictureBoxRegistration.Size = new System.Drawing.Size(226, 189);
-            this.pictureBoxRegistration.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxRegistration.Size = new System.Drawing.Size(231, 189);
+            this.pictureBoxRegistration.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBoxRegistration.TabIndex = 32;
             this.pictureBoxRegistration.TabStop = false;
             // 
@@ -529,12 +532,33 @@
             this.panel2.Size = new System.Drawing.Size(231, 189);
             this.panel2.TabIndex = 42;
             // 
+            // panel3
+            // 
+            this.panel3.AutoScroll = true;
+            this.panel3.Controls.Add(this.pictureBoxRegistration);
+            this.panel3.Location = new System.Drawing.Point(548, 552);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(226, 189);
+            this.panel3.TabIndex = 43;
+            // 
+            // RegisterTextBox
+            // 
+            this.RegisterTextBox.Location = new System.Drawing.Point(817, 685);
+            this.RegisterTextBox.Multiline = true;
+            this.RegisterTextBox.Name = "RegisterTextBox";
+            this.RegisterTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.RegisterTextBox.Size = new System.Drawing.Size(292, 50);
+            this.RegisterTextBox.TabIndex = 44;
+            // 
             // IPForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.LavenderBlush;
             this.ClientSize = new System.Drawing.Size(1155, 803);
+            this.Controls.Add(this.RegisterTextBox);
+            this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.RegistBListBox);
@@ -545,7 +569,6 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.pictureBoxRegistration);
             this.Controls.Add(this.resultListBox);
             this.Controls.Add(this.originListBox);
             this.Controls.Add(this.ResultHistogram);
@@ -585,6 +608,8 @@
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -627,6 +652,8 @@
         private System.Windows.Forms.ListBox RegistBListBox;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.TextBox RegisterTextBox;
     }
 }
 

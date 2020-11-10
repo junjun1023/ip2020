@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using hw1.Custom;
 
 namespace hw1.Extension
 {
@@ -14,6 +15,7 @@ namespace hw1.Extension
             Horizontal,
             Combined
         }
+
 
         public static Bitmap AddPadding(this Bitmap bitmap, int padding)
         {
@@ -428,7 +430,7 @@ namespace hw1.Extension
             return ret;
         }
 
-        public static Bitmap OverlapImage(this Bitmap bitmap, Bitmap mask)
+        public static Bitmap OverlayMaskByGraphics(this Bitmap bitmap, Bitmap mask)
         {
 
             for (int i = 0; i < mask.Width; i++)
@@ -448,14 +450,81 @@ namespace hw1.Extension
                 gr.DrawImage(mask, new Point(0, 0));
             }
 
+            return change;
+        }
+
+        public static Bitmap OverlayMask(this Bitmap bitmap, Bitmap mask)
+        {
+
+            for (int i = 0; i < mask.Width; i++)
+            for (int j = 0; j < mask.Height; j++)
+            {
+                Color color = mask.GetPixel(i, j);
+                color = color.R == 0 ? Color.FromArgb(0, 0, 0) : Color.FromArgb(0, 255, 0);
+                mask.SetPixel(i, j, color);
+            }
+
+            Bitmap change = new Bitmap(bitmap);
+
+            for (int y = 0; y < mask.Height; y++)
+            {
+                for (int x = 0; x < mask.Width; x++)
+                {
+                    Color c = change.GetPixel(x, y);
+                    Color m = mask.GetPixel(x, y);
+
+                    int r = c.R + m.R;
+                    int b = c.B + m.B;
+                    int g = m.G == 255 ? m.G : c.G;
+                    // int a = m.A == 128 ? m.A : c.A;
+                    change.SetPixel(x, y, Color.FromArgb(r, g, b));
+                 
+                }
+            }
+
 
             return change;
         }
 
 
-        public static Bitmap Transform(this Bitmap bitmap, double[,] matrix)
+        public static Bitmap Transformation(this Bitmap bitmap, Bitmap reference, double[,] mat)
         {
-            Bitmap change = new Bitmap(bitmap);
+            /*
+            int offsetX = (int) mat[2, 0];
+            int offsetY = (int) mat[2, 1];
+            double scaleX = Math.Sqrt(Math.Pow(mat[0, 0], 2) + Math.Pow(mat[0, 1], 2));
+            double scaleY = Math.Sqrt(Math.Pow(mat[1, 0], 2) + Math.Pow(mat[1, 1], 2));
+            double theta = Math.Atan(mat[0, 1] / mat[0, 0]);
+
+            int width = (int) Math.Ceiling((bitmap.Width - offsetX) / Math.Cos(theta) / scaleX);
+            int height = (int) Math.Ceiling(offsetX / Math.Sin(theta) / scaleY);
+            */
+
+            Bitmap change = new Bitmap(reference.Width, reference.Height);
+
+            CustomMatrix customMatrix = new CustomMatrix();
+
+            for (int i = 0; i < change.Width; i++)
+            for (int j = 0; j < change.Height; j++)
+            {
+
+                double[,] coordinate = new double[1, 3]
+                {
+                    {i, j, 1}
+                };
+
+                coordinate = customMatrix.MatrixMultiply(coordinate, mat);
+                int x = (int)Math.Round(coordinate[0, 0]);
+                int y = (int)Math.Round(coordinate[0, 1]);
+
+                if (x >= 0 && x < bitmap.Width && y >= 0 && y < bitmap.Height)
+                {
+                    Color color = bitmap.GetPixel(x, y);
+
+                    change.SetPixel(i, j, color);
+                }
+
+            }
 
             return change;
         }

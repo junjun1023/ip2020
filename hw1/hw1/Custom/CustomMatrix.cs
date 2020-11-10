@@ -122,7 +122,7 @@ namespace hw1.Custom
             }
 
             
-            dynamic delta = 0;
+            dynamic delta = -1;
 
             if (rows == 1)
             {
@@ -145,6 +145,12 @@ namespace hw1.Custom
                 delta = a * (e * i - f * h) +
                                 b * (f * g - d * i) +
                                 c * (d * h - e * g);
+                if (delta == 0)
+                {
+                    throw new Exception("No inverse matrix for input mat");
+                }
+
+
                 delta = 1.0 / delta;
 
                 T[,] ret = new T[3,3];
@@ -174,6 +180,8 @@ namespace hw1.Custom
 
             return arr1;
         }
+
+
 
     }
 }

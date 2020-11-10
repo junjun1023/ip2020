@@ -403,7 +403,7 @@ namespace hw1
         {
             Bitmap mask = BitmapList[ListIndex];
             Bitmap origin = BitmapList[0];
-            Bitmap img = origin.OverlapImage(mask);
+            Bitmap img = origin.OverlayMask(mask);
             ListHandling(img);
         }
 
@@ -527,7 +527,6 @@ namespace hw1
                 {RegistA[1].Item1, RegistA[1].Item2, 1},
                 {RegistA[2].Item1, RegistA[2].Item2, 1},
             };
-
             double[,] validB = new double[3, 3]
             {
                 {RegistB[0].Item1, RegistB[0].Item2, 1},
@@ -542,6 +541,8 @@ namespace hw1
             var cx = Math.Sqrt(Math.Pow(validA[0, 0], 2) + Math.Pow(validA[0, 1], 2));
             var cy = Math.Sqrt(Math.Pow(validA[1, 0], 2) + Math.Pow(validA[1, 1], 2));
             var theta = Math.Atan(validA[0, 1] / validA[0, 0]) / Math.PI * 180;
+            
+
 
             // rotate then scale
             var cx_2 = Math.Sqrt(Math.Pow(validA[0, 0], 2) + Math.Pow(validA[1, 0], 2));
@@ -552,9 +553,16 @@ namespace hw1
             // because matrix satisfy associative law
             // so there will be two same results for different orders of rotate and scale
 
+            // double[,] validAInversse = new double[3,3];
+            // validAInversse = customMatrix.MatrixInverse<double>(validA);
 
+            Bitmap img = new Bitmap(RegisterImageB.Image);
+            Bitmap reference = new Bitmap(RegisterImageA.Image);
+            img = img.Transformation(reference, validA);
+            pictureBoxRegistration.Image = img;
 
-
+            RegisterTextBox.Text = $"Scale factor: {cx}" + Environment.NewLine + 
+                                   $"Rotate Angle: {theta}" + Environment.NewLine;
         }
 
         private void GetTransformation()
