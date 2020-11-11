@@ -529,6 +529,36 @@ namespace hw1.Extension
             return change;
         }
 
+
+        public static double IntensityDifference(this Bitmap bitmap, Bitmap img)
+        {
+            
+            if (bitmap.Width != img.Width || bitmap.Height != img.Height)
+            {
+                throw new Exception("Two input image must have same size.");
+            }
+
+            Bitmap img1 = new Bitmap(bitmap);
+            Bitmap img2 = new Bitmap(img);
+
+            img1 = img1.ToGrayScale();
+            img2 = img2.ToGrayScale();
+
+            double sum = 0;
+
+            for (int i = 0; i < img1.Width; i++)
+            for (int j = 0; j < img2.Height; j++)
+            {
+                Color c = img1.GetPixel(i, j);
+                Color c2 = img2.GetPixel(i, j);
+
+                sum += Math.Abs(c.R - c2.R);
+            }
+
+
+            return sum / (img1.Width * img1.Height);
+        }
+
         /*public static Bitmap SmoothFilterMean(this Bitmap bitmap)
         {
             Bitmap change = new Bitmap(bitmap);

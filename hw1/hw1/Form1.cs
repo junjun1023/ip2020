@@ -561,8 +561,11 @@ namespace hw1
             img = img.Transformation(reference, validA);
             pictureBoxRegistration.Image = img;
 
+            double difference = img.IntensityDifference(reference);
+
             RegisterTextBox.Text = $"Scale factor: {cx}" + Environment.NewLine + 
-                                   $"Rotate Angle: {theta}" + Environment.NewLine;
+                                   $"Rotate Angle: {theta}" + Environment.NewLine +
+                                   $"Intensity Difference: {difference}";
         }
 
         private void GetTransformation()
