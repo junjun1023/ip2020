@@ -62,7 +62,8 @@ namespace hw1
             NextBtn.Enabled = false;
             BitmapList.Add(bitmap);
             ListIndex = BitmapList.Count - 1;
-            resultPictureBox.Image = bitmap;
+
+            HandlingImageAndHistogram();
         }
 
         private void ShowResultHistogram(Bitmap result)
@@ -150,6 +151,7 @@ namespace hw1
                     NextBtn.Enabled = false;
                     PrevBtn.Enabled = false;
 
+                    SaveBtn.Enabled = true;
                     ColorTransformationBtn.Enabled = true;
                     BinaryThresholdBtn.Enabled = true;
                     RgbExtractionBtn.Enabled = true;
@@ -193,6 +195,7 @@ namespace hw1
         {
             int PrevIndex = ListIndex - 1;
 
+            /*
             if (PrevIndex < BitmapList.Count && ListIndex > 0)
             {
                 NextBtn.Enabled = true;
@@ -201,6 +204,9 @@ namespace hw1
             {
                 NextBtn.Enabled = false;
             }
+            */
+
+            NextBtn.Enabled = true;
 
             if (PrevIndex < 0)
             {
@@ -210,15 +216,13 @@ namespace hw1
             {
                 PrevBtn.Enabled = false;
                 ListIndex = PrevIndex;
-                resultPictureBox.Image = BitmapList[ListIndex];
-                ShowResultHistogram(BitmapList[ListIndex]);
+                HandlingImageAndHistogram();
             }
             else
             {
                 PrevBtn.Enabled = true;
                 ListIndex = PrevIndex;
-                resultPictureBox.Image = BitmapList[ListIndex];
-                ShowResultHistogram(BitmapList[ListIndex]);
+                HandlingImageAndHistogram();
             }
 
         }
@@ -227,7 +231,9 @@ namespace hw1
         {
             int NextIndex = ListIndex + 1;
 
-            if (NextIndex < BitmapList.Count && ListIndex > 0)
+
+            /*
+            if (NextIndex <= BitmapList.Count && ListIndex > 0)
             {
                 PrevBtn.Enabled = true;
             }
@@ -235,6 +241,8 @@ namespace hw1
             {
                 PrevBtn.Enabled = false;
             }
+            */
+            PrevBtn.Enabled = true;
 
 
             if (NextIndex > BitmapList.Count - 1)
@@ -245,21 +253,49 @@ namespace hw1
             {
                 NextBtn.Enabled = false;
                 ListIndex = NextIndex;
-                resultPictureBox.Image = BitmapList[ListIndex];
-                ShowResultHistogram(BitmapList[ListIndex]);
+                HandlingImageAndHistogram();
             }
             else
             {
                 NextBtn.Enabled = true;
                 ListIndex = NextIndex;
-                resultPictureBox.Image = BitmapList[ListIndex];
-                ShowResultHistogram(BitmapList[ListIndex]);
+                HandlingImageAndHistogram();
             }
 
 
         }
 
 
+        private void HandlingImageAndHistogram()
+        {
+            if (BitmapList.Count == 0)
+            {
+                // empty
+            }
+            else if(BitmapList.Count == 1)
+            {
+                queryPictureBox.Image = BitmapList[0];
+                resultPictureBox.Image = BitmapList[0];
+                ShowOriginHistogram(BitmapList[0]);
+                ShowResultHistogram(BitmapList[0]);
+            }
+            else
+            {
+                if (ListIndex-1 < 0)
+                {
+                    queryPictureBox.Image = BitmapList[0];
+                    ShowOriginHistogram(BitmapList[0]);
+                }
+                else
+                {
+                    queryPictureBox.Image = BitmapList[ListIndex - 1];
+                    ShowOriginHistogram(BitmapList[ListIndex - 1]);
+                }
+                
+                resultPictureBox.Image = BitmapList[ListIndex];
+                ShowResultHistogram(BitmapList[ListIndex]);
+            }
+        }
 
         private void originListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -299,19 +335,16 @@ namespace hw1
             if (selected == 0) // R
             {
                 img = img.ToRChannel();
-                ShowResultHistogram(img);
                 ListHandling(img);
             }
             else if (selected == 1) // G
             {
                 img = img.ToGChannel();
-                ShowResultHistogram(img);
                 ListHandling(img);
             }
             else if (selected == 2) // B
             {
                 img = img.ToBChannel();
-                ShowResultHistogram(img);
                 ListHandling(img);
             }
             else
@@ -324,7 +357,6 @@ namespace hw1
         {
             Bitmap img = BitmapList[ListIndex];
             img = img.ToGrayScale();
-            ShowResultHistogram(img);
             ListHandling(img);
         }
 
@@ -336,14 +368,12 @@ namespace hw1
             {
                 // Mean
                 img = img.SmoothFilterMean();
-                ShowResultHistogram(img);
                 ListHandling(img);
             }
             else if (SmoothComboBox.SelectedIndex == 1)
             {
                 // Median
                 img = img.SmoothFilterMedian();
-                ShowResultHistogram(img);
                 ListHandling(img);
             }
         }
@@ -354,9 +384,7 @@ namespace hw1
             Bitmap img = BitmapList[ListIndex];
             var threshold = ThresoldUpDown.Value;
             img = img.BinaryThreshold(Convert.ToInt32(threshold));
-
-            ShowResultHistogram(img);
-
+            
             ListHandling(img);
         }
 
@@ -365,9 +393,7 @@ namespace hw1
             Bitmap img = BitmapList[ListIndex];
 
             img = img.HistogramEqualization();
-
-            ShowResultHistogram(img);
-
+            
             ListHandling(img);
         }
 
@@ -379,21 +405,18 @@ namespace hw1
             {
                 // Vertical
                 img = img.SobelEdgeDetection(BitmapExtension.SobelEdgeType.Vertical);
-                ShowResultHistogram(img);
                 ListHandling(img);
             }
             else if (SobelEdgeComboBox.SelectedIndex == 1)
             {
                 // Horizontal
                 img = img.SobelEdgeDetection(BitmapExtension.SobelEdgeType.Horizontal);
-                ShowResultHistogram(img);
                 ListHandling(img);
             }
             else if (SobelEdgeComboBox.SelectedIndex == 2)
             {
                 // Combined
                 img = img.SobelEdgeDetection(BitmapExtension.SobelEdgeType.Combined);
-                ShowResultHistogram(img);
                 ListHandling(img);
             }
 

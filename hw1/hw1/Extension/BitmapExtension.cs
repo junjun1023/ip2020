@@ -455,23 +455,24 @@ namespace hw1.Extension
 
         public static Bitmap OverlayMask(this Bitmap bitmap, Bitmap mask)
         {
+            Bitmap msk = new Bitmap(mask);
 
-            for (int i = 0; i < mask.Width; i++)
-            for (int j = 0; j < mask.Height; j++)
+            for (int i = 0; i < msk.Width; i++)
+            for (int j = 0; j < msk.Height; j++)
             {
-                Color color = mask.GetPixel(i, j);
+                Color color = msk.GetPixel(i, j);
                 color = color.R == 0 ? Color.FromArgb(0, 0, 0) : Color.FromArgb(0, 255, 0);
-                mask.SetPixel(i, j, color);
+                msk.SetPixel(i, j, color);
             }
 
             Bitmap change = new Bitmap(bitmap);
 
-            for (int y = 0; y < mask.Height; y++)
+            for (int y = 0; y < msk.Height; y++)
             {
-                for (int x = 0; x < mask.Width; x++)
+                for (int x = 0; x < msk.Width; x++)
                 {
                     Color c = change.GetPixel(x, y);
-                    Color m = mask.GetPixel(x, y);
+                    Color m = msk.GetPixel(x, y);
 
                     int r = c.R + m.R;
                     int b = c.B + m.B;
